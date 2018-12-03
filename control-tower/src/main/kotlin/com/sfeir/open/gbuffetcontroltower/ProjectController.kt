@@ -25,7 +25,11 @@ class ProjectController {
         return Project(
                 id = "test",
                 name = "test",
-                project_number = "0000000"
+                project_number = "0000000",
+                creation = Date(),
+                request = pr,
+                folder = "",
+                allocations = setOf(Allocation(0, "Compute", "CPU", null, null))
         )
     }
 }
