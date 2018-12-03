@@ -1,0 +1,391 @@
+---
+openapi: 3.0.2
+info:
+  title: GBuffet
+  description: The API for the GBuffet Control Tower
+  contact:
+    name: Josselin Pujo
+    email: pujo.j@sfeir.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  version: 1.0.0
+paths:
+  /utils/isValidId:
+    get:
+      description: Check that a GCP project_id is still available
+      parameters:
+        - name: id
+          description: Desired project id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ProjectId Ok
+            content:
+              application/json:
+                schema:
+
+  /projects:
+    get:
+      description: Get projects
+      parameters:
+        - name: active
+          in: query
+          description: Only active projects
+          required: false
+          schema:
+            type: boolean
+        - name: from
+          in: query
+          description: projects created after
+          schema:
+            format: date-time
+            type: string
+        - name: page_size
+          in: query
+          description: Number of projects to return
+          schema:
+            type: integer
+        - name: cursor
+          in: query
+          description: Cursor token for pagination
+          schema:
+            type: string
+        - name: q
+          in: query
+          description: Random query (see doc for spec)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of projects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/project_list'
+        '403':
+          description: Permission denied
+  /project_requests/{project_requestId}:
+    summary: Path used to manage a single project_request.
+    description: The REST endpoint/path used to get, update, and delete single instances
+      of an `project_request`.  This path contains `GET`, `PUT`, and `DELETE` operations
+      used to perform the get, update, and delete tasks, respectively.
+    get:
+      summary: Get a project_request
+      description: Gets the details of a single instance of a `project_request`.
+      operationId: getproject_request
+      responses:
+        '200':
+          description: Successful response - returns a single `project_request`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/project_request'
+        '403':
+          description: Permission denied
+        '404':
+          description: No request found
+    put:
+      summary: Update a project_request
+      description: Updates an existing `project_request`.
+      operationId: updateproject_request
+      requestBody:
+        description: Updated `project_request` information.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/project_request'
+        required: true
+      responses:
+        '202':
+          description: Successful response.
+        '403':
+          description: Permission denied
+    delete:
+      summary: Delete a project_request
+      description: Deletes an existing `project_request`.
+      operationId: deleteproject_request
+      responses:
+        '204':
+          description: Successful response.
+        '403':
+          description: Permission denied
+    parameters:
+      - name: project_requestId
+        in: path
+        description: A unique identifier for a `project_request`.
+        required: true
+        schema:
+          type: string
+  /project_requests:
+    summary: Path used to manage the list of project_requests.
+    description: The REST endpoint/path used to list and create zero or more `project_request`
+      entities.  This path contains a `GET` and `POST` operation to perform the list
+      and create tasks, respectively.
+    get:
+      summary: List All project_requests
+      description: Gets a list of all `project_request` entities.
+      operationId: getproject_requests
+      parameters:
+        - name: new
+          in: query
+          description: Only new reqests
+          required: false
+          schema:
+            type: boolean
+        - name: from
+          in: query
+          description: requests created after
+          schema:
+            format: date-time
+            type: string
+        - name: page_size
+          in: query
+          description: Number of requests to return
+          schema:
+            type: integer
+        - name: cursor
+          in: query
+          description: Cursor token for pagination
+          schema:
+            type: string
+        - name: q
+          in: query
+          description: Random query (see doc for spec)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response - returns an array of `project_request`
+            entities.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/requests_list'
+        '403':
+          description: Permission denied
+    post:
+      summary: Create a project_request
+      description: Creates a new instance of a `project_request`.
+      operationId: createproject_request
+      requestBody:
+        description: A new `project_request` to be created.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/project_request'
+        required: true
+      responses:
+        '201':
+          description: Successful response.
+        '403':
+          description: Permission denied
+  /projects/{project_id}:
+    get:
+      summary: Get project
+      description: Get project
+      parameters:
+        - name: project_id
+          in: path
+          description: Project Id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/project'
+        '403':
+          description: Permission denied
+        '404':
+          description: No project found
+    put:
+      summary: Update project
+      description: Update project
+      parameters:
+        - name: project_id
+          in: path
+          description: Project Id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Updated `project` information.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/project'
+        required: true
+      responses:
+        '202':
+          description: Successful response.
+        '403':
+          description: Permission denied
+    delete:
+      summary: Delete a project
+      description: Deletes an existing `project`.
+      parameters:
+        - name: project_id
+          in: path
+          description: Project Id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successful response.
+        '403':
+          description: Permission denied
+components:
+  schemas:
+    project_request:
+      required:
+        - id
+        - requester_email
+        - expected_lifetime
+        - allocations
+      properties:
+        id:
+          description: Unique Project Request ID, should be a valid google project
+            id [a-z0-9][a-z0-9\-]*
+          maxLength: 64
+          minLength: 8
+          pattern: '[a-z0-9][a-z0-9\-]*'
+          type: string
+        requester_email:
+          description: Google Account of the project requester
+          type: string
+        requester_group:
+          description: Google group of project users
+          type: string
+        expected_lifetime:
+          description: Lifetime of the project, in hours
+          minimum: 1
+          type: integer
+        request_status:
+          description: Status of the request
+          enum:
+            - NEW
+            - GRANTED
+            - REJECTED
+          type: string
+        creation:
+          format: date-time
+          description: Request creation date
+          type: string
+          readOnly: true
+        requester_comment:
+          description: Description of the request
+          type: string
+        admin_comment:
+          description: Admin response to the request
+          type: string
+        tags:
+          description: List of project tags (labels)
+          type: array
+          items:
+            type: string
+        project:
+          $ref: '#/components/schemas/project'
+          description: The allocated project if the request is GRANTED
+          readOnly: true
+        allocations:
+          description: Max resources allocations for the project
+          type: array
+          items:
+            $ref: '#/components/schemas/allocation'
+    allocation:
+      description: Generic resource quota
+      required:
+        - type
+        - unit
+        - allocation
+      properties:
+        id:
+          description: Allocation Id
+          type: long
+          readOnly: true
+        type:
+          description: Resource type
+          type: string
+        unit:
+          description: Resource allocation unit
+          type: string
+        region:
+          description: The region for the resource (if applicable)
+          type: string
+        zone:
+          description: The zone for the resource (if applicable)
+          type: string
+        allocation:
+          description: The requested or allocated quota for the resource
+          type: integer
+    project:
+      description: A project allocated to a request
+      required:
+        - allocations
+      properties:
+        id:
+          description: GCP Project id
+          type: string
+          readOnly: true
+        name:
+          description: Name
+          type: string
+        project_number:
+          description: GCP Project Number
+          type: string
+          readOnly: true
+        request:
+          $ref: '#/components/schemas/project_request'
+          description: The originating project request
+          readOnly: true
+        creation:
+          format: date-time
+          description: Project creation date
+          type: string
+          readOnly: true
+        folder:
+          description: Organisational folder for the project
+          type: string
+        tags:
+          description: Set of tags for the project
+          type: array
+          items:
+            type: string
+        allocations:
+          description: Allocated resources for the project (can be different from
+            the requested allocations)
+          type: array
+          items:
+            $ref: '#/components/schemas/allocation'
+    project_list:
+      description: List of projects
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/project'
+        next_token:
+          type: string
+    requests_list:
+      description: list of project requests
+      required:
+        - data
+      properties:
+        data:
+          description: Page of project requests
+          type: array
+          items:
+            $ref: '#/components/schemas/project_request'
+        next_token:
+          description: Cursor token for next page
+          type: string
