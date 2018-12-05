@@ -1,0 +1,90 @@
+<mat-card class="mat-whiteframe-2dp" align="center">
+    <mat-card-title class="myfont">
+      <span *ngIf="isUpdateMode">Response Request: {{ model?.project_name }}</span>
+      <span *ngIf="!isUpdateMode">Request a new project</span>
+    </mat-card-title>
+  <mat-divider></mat-divider>
+  <br>
+    <mat-card-content>
+      <form #f="ngForm">
+        <p *ngIf="isUpdateMode">
+          <mat-form-field>
+            <input [ngModel]="model.requester_email" matInput style="width:100%" placeholder="Requester email" disabled name="requester_email" />
+          </mat-form-field>
+        </p>
+  
+        <table style="width: 100%" cellspacing="0" *ngIf="!isAdminMode">
+          <tr>
+            <td>
+              <mat-form-field> 
+                <input [(ngModel)]="model.project_id" matInput placeholder="GCP project id" name="project_id" />
+              </mat-form-field>
+              <mat-form-field>
+                <input [(ngModel)]="model.project_name" matInput placeholder="Project name*" name="project_name" />
+              </mat-form-field>
+            </td>
+            <td class="align-right">
+              <img width="100" src="{{ model.photo || 'https://randomuser.me/api/portraits/lego/6.jpg' }}" />
+              <input type="hidden" [(ngModel)]="model.photo" name="photo" />
+            </td>
+          </tr>
+        </table>
+  
+        <p *ngIf="!isAdminMode">
+          <mat-form-field>
+            <input [(ngModel)]="model.email_group" matInput placeholder="Requester email group" name="email_group" />
+          </mat-form-field>
+          <mat-form-field>
+            <input [(ngModel)]="model.url_git" matInput placeholder="Url git" name="url_git" />
+          </mat-form-field>
+        </p>
+
+        <p>
+          <mat-form-field *ngIf="!isAdminMode">
+            <input [(ngModel)]="model.expected_lifetime" matInput type="number"  placeholder="Expected lifetime (hours)* " name="expected_lifetime"/>
+          </mat-form-field>
+          <mat-form-field *ngIf="!isAdminMode">
+              <input [(ngModel)]="model.tags" matInput  placeholder="Tags" name="tags"/>
+          </mat-form-field>  
+          <mat-form-field *ngIf="isAdminMode">
+              <input [(ngModel)]="model.folder" matInput placeholder="Folder" name="folder" />
+          </mat-form-field>
+        </p>
+        <p>
+          <mat-form-field *ngIf="isAdminMode"> 
+              <mat-select [(ngModel)]="model.status" [(value)]="selected" placeholder="Request status" name="status">
+                <mat-option value="GRANTED">GRANTED</mat-option>
+                <mat-option value="REJECTED">REJECTED</mat-option>
+              </mat-select>
+            </mat-form-field>
+        </p>
+        <p>
+          <mat-form-field *ngIf="!isAdminMode">
+              <textarea [(ngModel)]="model.requester_comment" matInput  placeholder="Requester comment" name="requester_comment"></textarea>
+          </mat-form-field>
+          <mat-form-field *ngIf="!isAdminMode"> 
+              <mat-select [(ngModel)]="model.allocation.type" [(value)]="selected" placeholder="Allocation type*" name="status">
+                <mat-option value="NEW">COMPUTE</mat-option>
+              </mat-select>  
+          </mat-form-field>
+          <mat-form-field *ngIf="isAdminMode">
+              <textarea [(ngModel)]="model.admin_comment" matInput  placeholder="Admin comment" name="admin_comment"></textarea>
+          </mat-form-field>
+        </p>
+        <p>
+            <mat-form-field *ngIf="!isAdminMode">
+                <input [(ngModel)]="model.allocation.unit" matInput placeholder="Allocation unit*" name="allocation_unit"/>
+            </mat-form-field>
+            <mat-form-field *ngIf="!isAdminMode">
+                <input [(ngModel)]="model.allocation.number" matInput  type="number" placeholder="Allocation number*" name="allocation_number"/>
+            </mat-form-field>  
+          </p>
+      </form>
+    </mat-card-content>
+  
+    <mat-card-actions align="center">
+      <button mat-button color="accent" type="button" (click)="cancel()"><i class="material-icons" >cancel</i>Cancel</button>
+      <button mat-button color="primary" type="submit" (click)="submit()"><i class="material-icons" >save</i>Save</button>
+    </mat-card-actions>
+  </mat-card>
+  

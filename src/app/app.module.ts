@@ -8,13 +8,18 @@ import { ProjectRequestComponent } from './project-request/project-request.compo
 import { AddDialogComponent } from './project-request/add-dialog/add-dialog.component';
 import { MaterialModule } from './material/material.module'
 import { CommonModule } from '@angular/common';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { FormComponent } from './shared/form/form.component';
+import { CardComponent } from './shared/card/card.component';
 @NgModule({
   declarations: [
     AppComponent,
     AdminComponent,
     ProjectRequestComponent,
-    AddDialogComponent
+    AddDialogComponent,
+    FormComponent,
+    CardComponent
   ],
   imports: [
     BrowserModule,
@@ -24,7 +29,8 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
     BrowserAnimationsModule,
     AppRoutingModule
   ],
-  providers: [AddDialogComponent],
+  entryComponents: [AddDialogComponent],
+  providers: [HttpClient],
   bootstrap: [AppComponent, ProjectRequestComponent, AdminComponent]
 })
 export class AppModule { }

@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
-
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { HttpClient } from '@angular/common/http';
+import { AddDialogComponent } from './add-dialog/add-dialog.component'
 export interface UserData {
   id: string;
   name: string;
@@ -23,13 +25,15 @@ const NAMES: string[] = ['Maia', 'Asher', 'Olivia', 'Atticus', 'Amelia', 'Jack',
   styleUrls: ['./project-request.component.css']
 })
 export class ProjectRequestComponent implements OnInit {
+  private addDialog: MatDialogRef<AddDialogComponent>;
+  dialogStatus = 'inactive';
   displayedColumns: string[] = ['id', 'name', 'progress', 'color'];
   dataSource: MatTableDataSource<UserData>;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  constructor() {
+  constructor(public dialog: MatDialog) {
     // Create 100 users
     const users = Array.from({length: 100}, (_, k) => createNewUser(k + 1));
 
@@ -49,6 +53,29 @@ export class ProjectRequestComponent implements OnInit {
       this.dataSource.paginator.firstPage();
     }
   }
+  
+  // Open dialog
+  showDialog() {
+    this.dialogStatus = 'active';
+    this.addDialog = this.dialog.open(AddDialogComponent, {
+      width: '450px',
+      data: {}
+    });
+
+    this.addDialog.afterClosed().subscribe(project_request => {
+      this.dialogStatus = 'inactive';
+      console.log('request: ', project_request);
+      if (project_request) {
+        //this.add(project_request);
+      }
+    });
+  }
+
+  hideDialog() {
+    this.dialogStatus = 'inactive';
+    this.addDialog.close();
+  }
+
 }
 
 /** Builds and returns a new User. */

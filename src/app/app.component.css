@@ -2,6 +2,7 @@
   display: block;
   margin: 0 auto;
   max-width: 1050px;
+  margin-top: 10px;
 }
 
 .material-icons.color_orange { color: #E75112; }
@@ -63,7 +64,6 @@ mat-toolbar.extend-toolbar {
     font-family: 'Material Icons';
     font-weight: normal;
     font-style: normal;
-    font-size: 30px;  /* Preferred icon size */
     display: inline-block;
     line-height: 1;
     text-transform: none;

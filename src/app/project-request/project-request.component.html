@@ -1,3 +1,7 @@
+<mat-toolbar>
+    <span class="flex"></span><h1  id="head" class="myfont"> My project requests </h1><span class="flex"></span>
+</mat-toolbar>
+
 <mat-form-field>
     <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
   </mat-form-field>
@@ -37,3 +41,9 @@
     <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
   </div>
   
+
+  <!-- Button dialog who help to request a GCP project-->
+  <button id="but" (click)="showDialog()" *ngIf="dialogStatus == 'inactive'" mat-fab color="warn">
+      <i class="material-icons">add</i>
+  </button>
+
