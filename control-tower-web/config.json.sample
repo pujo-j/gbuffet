@@ -1,0 +1,11 @@
+{
+  "Project": "[GCP Control Tower Project Name]",
+  "OAuth": {
+    "ClientID": "[CLIENTID]",
+    "ClientSecret": "[CLIENTSECRET]",
+    "RedirectUrl": "[REDIRECTURL]"
+  },
+  "JWT": {
+    "Secret": "[JWTSECRET]"
+  }
+}

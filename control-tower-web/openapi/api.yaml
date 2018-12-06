@@ -40,48 +40,6 @@ paths:
               schema:
                 ok:
                   type: boolean
-  /projects:
-    get:
-      description: Get projects
-      parameters:
-        - name: active
-          in: query
-          description: Only active projects
-          required: false
-          schema:
-            type: boolean
-        - name: from
-          in: query
-          description: projects created after
-          schema:
-            format: date-time
-            type: string
-        - name: page_size
-          in: query
-          description: Number of projects to return
-          schema:
-            type: integer
-        - name: cursor
-          in: query
-          description: Cursor token for pagination
-          schema:
-            type: string
-        - name: q
-          in: query
-          description: Random query (see doc for spec)
-          schema:
-            type: string
-      responses:
-        '200':
-          description: List of projects
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/project'
-        '403':
-          description: Permission denied
   /project_requests/{project_requestId}:
     summary: Path used to manage a single project_request.
     description: The REST endpoint/path used to get, update, and delete single instances
@@ -143,34 +101,6 @@ paths:
       summary: List All project_requests
       description: Gets a list of all `project_request` entities.
       operationId: getproject_requests
-      parameters:
-        - name: new
-          in: query
-          description: Only new reqests
-          required: false
-          schema:
-            type: boolean
-        - name: from
-          in: query
-          description: requests created after
-          schema:
-            format: date-time
-            type: string
-        - name: page_size
-          in: query
-          description: Number of requests to return
-          schema:
-            type: integer
-        - name: cursor
-          in: query
-          description: Cursor token for pagination
-          schema:
-            type: string
-        - name: q
-          in: query
-          description: Random query (see doc for spec)
-          schema:
-            type: string
       responses:
         '200':
           description: Successful response - returns an array of `project_request`
@@ -199,65 +129,6 @@ paths:
           description: Successful response.
         '403':
           description: Permission denied
-  /projects/{project_id}:
-    get:
-      summary: Get project
-      description: Get project
-      parameters:
-        - name: project_id
-          in: path
-          description: Project Id
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: The project
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/project'
-        '403':
-          description: Permission denied
-        '404':
-          description: No project found
-    put:
-      summary: Update project
-      description: Update project
-      parameters:
-        - name: project_id
-          in: path
-          description: Project Id
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: Updated `project` information.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/project'
-        required: true
-      responses:
-        '202':
-          description: Successful response.
-        '403':
-          description: Permission denied
-    delete:
-      summary: Delete a project
-      description: Deletes an existing `project`.
-      parameters:
-        - name: project_id
-          in: path
-          description: Project Id
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: Successful response.
-        '403':
-          description: Permission denied
 components:
   schemas:
     project_request:
@@ -278,6 +149,10 @@ components:
         project_name:
           description: User friendly name for the project
           type: string
+        project_number:
+          description: GCP Project Number
+          type: string
+          readOnly: true
         requester_email:
           description: Google Account of the project requester
           type: string
@@ -300,17 +175,31 @@ components:
           description: Request creation date
           type: string
           readOnly: true
+        project_creation:
+          format: date-time
+          description: Project creation date
+          type: string
+          readOnly: true
+        project_deletion:
+          format: date-time
+          description: Project deletion date
+          type: string
+          readOnly: true
         requester_comment:
           description: Description of the request
           type: string
         admin_comment:
           description: Admin response to the request
           type: string
+        folder:
+          description: Organisational folder for the project
+          type: string
         tags:
           description: List of project tags (labels)
           type: array
           items:
             type: string
+
         allocations:
           description: Max resources allocations for the project
           type: array
@@ -342,42 +231,3 @@ components:
         allocation:
           description: The requested or allocated quota for the resource
           type: integer
-    project:
-      description: A project allocated to a request
-      required:
-        - allocations
-      properties:
-        id:
-          description: GCP Project id
-          type: string
-          readOnly: true
-        name:
-          description: Name
-          type: string
-        project_number:
-          description: GCP Project Number
-          type: string
-          readOnly: true
-        request:
-          $ref: '#/components/schemas/project_request'
-          description: The originating project request
-          readOnly: true
-        creation:
-          format: date-time
-          description: Project creation date
-          type: string
-          readOnly: true
-        folder:
-          description: Organisational folder for the project
-          type: string
-        tags:
-          description: Set of tags for the project
-          type: array
-          items:
-            type: string
-        allocations:
-          description: Allocated resources for the project (can be different from
-            the requested allocations)
-          type: array
-          items:
-            $ref: '#/components/schemas/allocation'
