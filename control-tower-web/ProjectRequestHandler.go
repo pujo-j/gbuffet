@@ -2,23 +2,28 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/julienschmidt/httprouter"
+	"github.com/pujo-j/gogae"
 	"time"
 )
 
-func RouteProjectRequests(router *httprouter.Router, a *AuthMiddleware) {
-	router.GET("/project_requests", Handle(ProjectRequestsGet, a))
-	router.POST("/project_requests", Handle(ProjectRequestsPost, a))
-	router.GET("/project_requests/:id", Handle(ProjectRequestGet, a))
-	router.DELETE("/project_requests/:id", Handle(ProjectRequestDelete, a))
-	router.PUT("/project_requests/:id", Handle(ProjectRequestPut, a))
+func RouteProjectRequests(g gogae.Gogae) {
+	g.Router.GET("/project_requests", g.Handle(ProjectRequestsGet))
+	g.Router.POST("/project_requests", g.Handle(ProjectRequestsPost))
+	g.Router.GET("/project_requests/:id", g.Handle(ProjectRequestGet))
+	g.Router.DELETE("/project_requests/:id", g.Handle(ProjectRequestDelete))
+	g.Router.PUT("/project_requests/:id", g.Handle(ProjectRequestPut))
 }
 
-func ProjectRequestsGet(r RequestContext) (interface{}, int, error) {
-	if r.UserData.IsAdmin {
+func ProjectRequestsGet(r gogae.RequestContext) (interface{}, int, error) {
+	ud, err := UserDataParse(r.UserDataJson)
+	if err != nil {
+		r.Log.WithError(err).Error("Parsing user data")
+		return nil, 500, err
+	}
+	if ud.IsAdmin {
 		pr, err := SelectProjectRequests(db, "")
 		if err != nil {
-			log.WithError(err).Error("Selecting project requests")
+			r.Log.WithError(err).Error("Selecting project requests")
 			return nil, 500, err
 		}
 		return pr, 200, nil
@@ -26,23 +31,23 @@ func ProjectRequestsGet(r RequestContext) (interface{}, int, error) {
 		user, _ := r.JWTToken.Claims.Subject()
 		pr, err := SelectProjectRequests(db, "WHERE requester_email=?", user)
 		if err != nil {
-			log.WithError(err).Error("Selecting project requests")
+			r.Log.WithError(err).Error("Selecting project requests")
 			return nil, 500, err
 		}
 		return pr, 200, nil
 	}
 }
 
-func ProjectRequestsPost(r RequestContext) (interface{}, int, error) {
+func ProjectRequestsPost(r gogae.RequestContext) (interface{}, int, error) {
 	if r.Request.Header.Get("Content-Type") != "application/json" {
-		log.Error("Invalid content type in request")
+		r.Log.Error("Invalid content type in request")
 		return nil, 400, nil
 	}
 	defer r.Request.Body.Close()
 	pr := ProjectRequest{}
 	err := json.NewDecoder(r.Request.Body).Decode(&pr)
 	if err != nil {
-		log.WithError(err).Error("Decoding json")
+		r.Log.WithError(err).Error("Decoding json")
 		return nil, 400, nil
 	}
 	requester, _ := r.JWTToken.Claims.Subject()
@@ -60,18 +65,23 @@ func ProjectRequestsPost(r RequestContext) (interface{}, int, error) {
 	}
 	err = pr2.Save(db)
 	if err != nil {
-		log.WithField("project_request", pr2).WithError(err).Error("Saving new project request")
+		r.Log.WithField("project_request", pr2).WithError(err).Error("Saving new project request")
 		return nil, 500, err
 	}
-	return r.redirect("/project_requests/"+pr2.ProjectId, 201)
+	return r.Redirect("/project_requests/"+pr2.ProjectId, 201)
 }
 
-func ProjectRequestGet(r RequestContext) (interface{}, int, error) {
+func ProjectRequestGet(r gogae.RequestContext) (interface{}, int, error) {
+	ud, err := UserDataParse(r.UserDataJson)
+	if err != nil {
+		r.Log.WithError(err).Error("Parsing user data")
+		return nil, 500, err
+	}
 	user, _ := r.JWTToken.Claims.Subject()
 	id := r.Params.ByName("id")
 	prs, err := SelectProjectRequests(db, "WHERE project_id=? LIMIT 1", id)
 	if err != nil {
-		log.WithField("id", id).WithError(err).Error("Selecting project request")
+		r.Log.WithField("id", id).WithError(err).Error("Selecting project request")
 		return nil, 500, err
 	}
 	if len(prs) == 0 {
@@ -79,7 +89,7 @@ func ProjectRequestGet(r RequestContext) (interface{}, int, error) {
 	}
 	pr := prs[0]
 	// Ok, we got the project request, check that the user can read it
-	if !r.UserData.IsAdmin {
+	if !ud.IsAdmin {
 		//TODO: maybe check that user is in the requesting group if he is not the requesting user
 		if !(pr.RequesterEmail == user) {
 			return nil, 403, nil
@@ -88,12 +98,17 @@ func ProjectRequestGet(r RequestContext) (interface{}, int, error) {
 	return prs[0], 200, nil
 }
 
-func ProjectRequestDelete(r RequestContext) (interface{}, int, error) {
+func ProjectRequestDelete(r gogae.RequestContext) (interface{}, int, error) {
+	ud, err := UserDataParse(r.UserDataJson)
+	if err != nil {
+		r.Log.WithError(err).Error("Parsing user data")
+		return nil, 500, err
+	}
 	id := r.Params.ByName("id")
-	if r.UserData.IsAdmin {
+	if ud.IsAdmin {
 		prs, err := SelectProjectRequests(db, "WHERE project_id=?", id)
 		if err != nil {
-			log.WithError(err).Error("Loading project request")
+			r.Log.WithError(err).Error("Loading project request")
 			return nil, 500, err
 		}
 		if len(prs) == 0 {
@@ -106,42 +121,47 @@ func ProjectRequestDelete(r RequestContext) (interface{}, int, error) {
 		pr.ProjectDeletion = &deletion
 		err = pr.Save(db)
 		if err != nil {
-			log.WithError(err).Error("Saving deleted project request")
+			r.Log.WithError(err).Error("Saving deleted project request")
 			return nil, 500, err
 		} else {
 			return nil, 204, nil
 		}
 	} else {
 		// No deletion by non admins, verboten
-		log.Error("Non admin user tried to delete project request")
+		r.Log.Error("Non admin user tried to delete project request")
 		return nil, 403, nil
 	}
 }
 
-func ProjectRequestPut(r RequestContext) (interface{}, int, error) {
+func ProjectRequestPut(r gogae.RequestContext) (interface{}, int, error) {
+	ud, err := UserDataParse(r.UserDataJson)
+	if err != nil {
+		r.Log.WithError(err).Error("Parsing user data")
+		return nil, 500, err
+	}
 	id := r.Params.ByName("id")
-	if r.UserData.IsAdmin {
+	if ud.IsAdmin {
 		pr := ProjectRequest{}
 		defer r.Request.Body.Close()
 		err := json.NewDecoder(r.Request.Body).Decode(&pr)
 		if err != nil {
-			log.WithError(err).Error("Error decoding request")
+			r.Log.WithError(err).Error("Error decoding request")
 			return nil, 400, err
 		}
 		// Check that projectId is consistent with URL...
 		if !(pr.ProjectId == id) {
-			log.Error("Trying to modify a project_id")
+			r.Log.Error("Trying to modify a project_id")
 			return "Invalid project_id", 400, nil
 		}
 		err = pr.Save(db)
 		if err != nil {
-			log.WithError(err).Error("Saving project")
+			r.Log.WithError(err).Error("Saving project")
 			return nil, 500, err
 		}
 		return nil, 202, nil
 	} else {
 		// No modification by non admins, verboten
-		log.Error("Non admin user tried to update project request")
+		r.Log.Error("Non admin user tried to update project request")
 		return nil, 403, nil
 	}
 }

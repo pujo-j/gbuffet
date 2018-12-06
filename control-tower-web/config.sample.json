@@ -1,0 +1,27 @@
+{
+  "AuthConfig": {
+    "Prefix": "/auth/google",
+    "Project": "[PROJECT]",
+    "OAuth": {
+      "ClientID": "[CLIENT_ID]",
+      "ClientSecret": "[CLIENT_SECRET]",
+      "RedirectUrl": "[OAUTH_REDIRECT]"
+      "Scopes": [
+        "email",
+        "profile",
+        "openid",
+        "https://www.googleapis.com/auth/admin.directory.group.readonly",
+        "https://www.googleapis.com/auth/iam.test"
+      ]
+    },
+    "JWT": {
+      "Secret": "[JWT_SECRET]"
+    }
+  },
+  "CloudSQLConfig": {
+    "Instance": "[CLOUDSQL_INSTANCE_NAME]",
+    "User": "[CLOUDSQL_USER]",
+    "Password": "[CLOUDSQL_PASSWORD]",
+    "DbName": "[CLOUDSQL_DATABASE]"
+  }
+}
