@@ -1,0 +1,26 @@
+<div id="container">
+  <mat-toolbar  class="extend-toolbar">
+    <span id="logo"> 
+        <img src="assets/images/logo-SFEIR-blanc-orange.png" width="180" height="85" aria-label="sfeir" alt="Sfeir" />
+    </span>
+
+    <span class="flex"></span>
+
+    <span>
+      <a [routerLink]="['/admin']" *ngIf="isAdminMode"><i class="material-icons" >dashboard</i><b> Dashboard</b></a> 
+      <a [routerLink]="['/home']"><i class="material-icons" >home</i><b>Home</b></a>
+    </span>
+    
+  </mat-toolbar>
+
+
+
+  <router-outlet></router-outlet>
+
+  <br><br>
+  <mat-toolbar>  
+    <span class="flex"></span><b>Sfeir Enterprise ©2018</b><span class="flex"></span>
+  </mat-toolbar>
+
+</div>
+
