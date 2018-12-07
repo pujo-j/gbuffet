@@ -1,4 +1,5 @@
 {
+  "BillingAccount": "[BILLING_ACCOUNT]",
   "AuthConfig": {
     "Prefix": "/auth/google",
     "Project": "[PROJECT]",

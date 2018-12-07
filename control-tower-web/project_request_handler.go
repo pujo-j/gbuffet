@@ -153,11 +153,31 @@ func ProjectRequestPut(r gogae.RequestContext) (interface{}, int, error) {
 			r.Log.Error("Trying to modify a project_id")
 			return "Invalid project_id", 400, nil
 		}
+		// Load old version from database
+		prs, err := SelectProjectRequests(db, "WHERE project_id=? LIMIT 1", id)
+		if err != nil {
+			r.Log.WithField("id", id).WithError(err).Error("Selecting project request")
+			return nil, 500, err
+		}
+		if len(prs) == 0 {
+			return nil, 404, err
+		}
+		//old := prs[0]
 		err = pr.Save(db)
 		if err != nil {
 			r.Log.WithError(err).Error("Saving project")
 			return nil, 500, err
 		}
+		/*
+		if old.RequestStatus == NEW && pr.RequestStatus == GRANTED {
+			res, err := createProject(r, &pr)
+			if err != nil {
+				r.Log.WithError(err).Error("Running deployment manager")
+				return nil, 500, err
+			}
+			return res, 202, nil
+		}
+		*/
 		return nil, 202, nil
 	} else {
 		// No modification by non admins, verboten

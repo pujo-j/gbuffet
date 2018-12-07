@@ -1,5 +1,6 @@
 
 config.json
 config.dev.json
+serviceAccount.json
 *.exe
 *.iml

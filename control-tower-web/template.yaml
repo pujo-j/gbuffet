@@ -1,0 +1,37 @@
+resources:
+  - name: project
+    properties:
+      name: '{{.Project.ProjectName}}'
+      parent:
+        id: '{{.Project.Folder}}'
+        type: folder
+      projectId: '{{.Project.ProjectId}}'
+    type: cloudresourcemanager.v1.project
+  - metadata:
+      dependsOn:
+        - project
+    name: '{{.Project.ProjectName}}'
+    properties:
+      billingAccountName: '{{.BillingAccount}}'
+      name: 'projects/{{.Project.ProjectId}}'
+    type: deploymentmanager.v2.virtual.projectBillingInfo
+  - action: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.getIamPolicy
+    metadata:
+      runtimePolicy:
+        - UPDATE_ALWAYS
+    name: get-iam-policy
+    properties:
+      resource: {{.Project.ProjectId}}
+  - action: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.setIamPolicy
+    metadata:
+      dependsOn:
+        - get-iam-policy
+    name: patch-iam-policy
+    properties:
+      gcpIamPolicyPatch:
+        add:
+          - members:
+              - serviceAccount:{{.ControlTower}}@appspot.gserviceaccount.com
+            role: roles/owner
+      policy: $(ref.get-iam-policy)
+      resource: {{.Project.ProjectId}}

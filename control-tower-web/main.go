@@ -10,6 +10,13 @@ import (
 
 var db *sql.DB
 
+type Config struct {
+	BillingAccount string
+	gogae.GogaeConfig
+}
+
+var config = Config{}
+
 func main() {
 	var configFile *os.File
 	var err error
@@ -26,13 +33,13 @@ func main() {
 		}
 	}
 	jsonParser := json.NewDecoder(configFile)
-	config := gogae.GogaeConfig{}
+
 	err = jsonParser.Decode(&config)
 	if err != nil {
 		panic(err.Error())
 	}
 	_ = configFile.Close()
-	g, err := gogae.InitGogae(config, MakeUserDataFunction(config.AuthConfig.Project))
+	g, err := gogae.InitGogae(config.GogaeConfig, MakeUserDataFunction(config.AuthConfig.Project))
 
 	RouteUtils(g)
 	RouteProjectRequests(g)
