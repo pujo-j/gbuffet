@@ -32,7 +32,7 @@ export interface UserData {
 export class ProjectRequestComponent implements OnInit {
   private addDialog: MatDialogRef<AddDialogComponent>;
   dialogStatus = 'inactive';
-  isAdminMode: boolean = false;
+  isAdminMode: boolean = true;
   userTable: string[] = ['id', 'project_id', 'project_name', 'creation_date', 'status'];
   adminTable: string[] = ['id', 'requester_email', 'project_id', 'project_name', 'creation_date', 'status']
   displayedColumns: string[] = this.isAdminMode != true? this.userTable: this.adminTable;
