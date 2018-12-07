@@ -11,6 +11,13 @@ table {
     width: 25%;
   }
 
+  td {
+    text-align: left; 
+    cursor: pointer; 
+    outline : none;
+    }
+
+
   .orangeFont{
     color: #E75112
   }

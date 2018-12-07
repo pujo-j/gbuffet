@@ -12,6 +12,8 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { FormComponent } from './shared/form/form.component';
 import { CardComponent } from './shared/card/card.component';
+import { UpdateComponent } from './update/update.component';
+import { ViewComponent } from './view/view.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -19,7 +21,9 @@ import { CardComponent } from './shared/card/card.component';
     ProjectRequestComponent,
     AddDialogComponent,
     FormComponent,
-    CardComponent
+    CardComponent,
+    UpdateComponent,
+    ViewComponent
   ],
   imports: [
     BrowserModule,

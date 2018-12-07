@@ -1,20 +1,18 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { HttpClient } from '@angular/common/http';
-import { AddDialogComponent } from './add-dialog/add-dialog.component'
+import {animate, state, style, transition, trigger} from '@angular/animations';
+import { AddDialogComponent } from './add-dialog/add-dialog.component';
+import { Router } from '@angular/router';
 export interface UserData {
   id: string;
-  name: string;
-  progress: string;
-  color: string;
+  project_id: string;
+  project_name: string;
+  creation_date: string;
+  status: string;
+  requester_email: string
 }
-/** Constants used to fill up our data base. */
-const COLORS: string[] = ['maroon', 'red', 'orange', 'yellow', 'olive', 'green', 'purple',
-  'fuchsia', 'lime', 'teal', 'aqua', 'blue', 'navy', 'black', 'gray'];
-const NAMES: string[] = ['Maia', 'Asher', 'Olivia', 'Atticus', 'Amelia', 'Jack',
-  'Charlotte', 'Theodore', 'Isla', 'Oliver', 'Isabella', 'Jasper',
-  'Cora', 'Levi', 'Violet', 'Arthur', 'Mia', 'Thomas', 'Elizabeth'];
+
 
 /**
  * @title Data table with sorting, pagination, and filtering.
@@ -22,20 +20,57 @@ const NAMES: string[] = ['Maia', 'Asher', 'Olivia', 'Atticus', 'Amelia', 'Jack',
 @Component({
   selector: 'app-project-request',
   templateUrl: './project-request.component.html',
-  styleUrls: ['./project-request.component.css']
+  styleUrls: ['./project-request.component.css'],
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed', style({height: '0px', minHeight: '0', display: 'none'})),
+      state('expanded', style({height: '*'})),
+      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    ]),
+  ],
 })
 export class ProjectRequestComponent implements OnInit {
   private addDialog: MatDialogRef<AddDialogComponent>;
   dialogStatus = 'inactive';
-  displayedColumns: string[] = ['id', 'name', 'progress', 'color'];
+  isAdminMode: boolean = false;
+  userTable: string[] = ['id', 'project_id', 'project_name', 'creation_date', 'status'];
+  adminTable: string[] = ['id', 'requester_email', 'project_id', 'project_name', 'creation_date', 'status']
+  displayedColumns: string[] = this.isAdminMode != true? this.userTable: this.adminTable;
   dataSource: MatTableDataSource<UserData>;
+  expandedElement: UserData | null;
+  
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  constructor(public dialog: MatDialog) {
-    // Create 100 users
-    const users = Array.from({length: 100}, (_, k) => createNewUser(k + 1));
+  constructor(public dialog: MatDialog, private router: Router) {
+    // get project http request here
+    const users: UserData [] = [
+      {
+        id: "1",
+        project_id: "gbuffet_test",
+        project_name: "Gcp Buffet",
+        creation_date: "2016-1-17",
+        status: "NEW",
+        requester_email: "andresse@gmail.fr"
+      },
+      {
+        id: "3",
+        project_id: "Aliast_test",
+        project_name: "Allea",
+        creation_date: "2016-3-17",
+        status: "GRANTED",
+        requester_email: "andresse@gmail.fr"
+      },
+      {
+        id: "2",
+        project_id: "Aliast_test",
+        project_name: "Bllea",
+        creation_date: "2016-2-17",
+        status: "GRANTED",
+        requester_email: "andresse@gmail.fr"
+      }
+  ]
 
     // Assign the data to the data source for the table to render
     this.dataSource = new MatTableDataSource(users);
@@ -53,6 +88,7 @@ export class ProjectRequestComponent implements OnInit {
       this.dataSource.paginator.firstPage();
     }
   }
+
   
   // Open dialog
   showDialog() {
@@ -76,18 +112,4 @@ export class ProjectRequestComponent implements OnInit {
     this.addDialog.close();
   }
 
-}
-
-/** Builds and returns a new User. */
-function createNewUser(id: number): UserData {
-  const name =
-      NAMES[Math.round(Math.random() * (NAMES.length - 1))] + ' ' +
-      NAMES[Math.round(Math.random() * (NAMES.length - 1))].charAt(0) + '.';
-
-  return {
-    id: id.toString(),
-    name: name,
-    progress: Math.round(Math.random() * 100).toString(),
-    color: COLORS[Math.round(Math.random() * (COLORS.length - 1))]
-  };
 }

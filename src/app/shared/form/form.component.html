@@ -1,6 +1,7 @@
 <mat-card class="mat-whiteframe-2dp" align="center">
     <mat-card-title class="myfont">
-      <span *ngIf="isUpdateMode">Response Request: {{ model?.project_name }}</span>
+      <span *ngIf="isUpdateMode && isAdminMode">Response of request <br>Test{{ model?.project_name }}</span>
+      <span *ngIf="isUpdateMode && !isAdminMode">Update of my request <br>Test{{ model?.project_name }}</span>
       <span *ngIf="!isUpdateMode">Request a new project</span>
     </mat-card-title>
   <mat-divider></mat-divider>
@@ -24,8 +25,7 @@
               </mat-form-field>
             </td>
             <td class="align-right">
-              <img width="100" src="{{ model.photo || 'https://randomuser.me/api/portraits/lego/6.jpg' }}" />
-              <input type="hidden" [(ngModel)]="model.photo" name="photo" />
+              <img width="100" src="{{ model.photo || '../../assets/images/icon-mail.svg' }}" />
             </td>
           </tr>
         </table>
@@ -64,7 +64,7 @@
           </mat-form-field>
           <mat-form-field *ngIf="!isAdminMode"> 
               <mat-select [(ngModel)]="model.allocation.type" [(value)]="selected" placeholder="Allocation type*" name="status">
-                <mat-option value="NEW">COMPUTE</mat-option>
+                <mat-option value="COMPUTE">COMPUTE</mat-option>
               </mat-select>  
           </mat-form-field>
           <mat-form-field *ngIf="isAdminMode">
