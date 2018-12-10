@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { mergeMap, map } from 'rxjs/operators';
+
 const BASE_URL = 'https://deployment-function-holder.appspot.com';
 
 @Component({
@@ -29,6 +30,15 @@ export class UpdateComponent implements OnInit {
         mergeMap((id: string) => this._http.get(`${BASE_URL}/project_requests/${id}`))
       )
       .subscribe((project_request: any) => (this.project_request = project_request));
+  }
+
+
+  submit(project_request: any) {
+    this._http.put(`${BASE_URL}/project_requests/${project_request.id}`, project_request).subscribe(() => this._router.navigate(['/home']));
+  }
+
+  cancel() {
+    this._router.navigate(['/home']);
   }
 
 }
