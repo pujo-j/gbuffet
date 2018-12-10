@@ -1,3 +1,6 @@
 <mat-toolbar>
     <span class="flex"></span><h1 class="myfont"> Dashboard admin - Control tower</h1><span class="flex"></span>
 </mat-toolbar>
+
+
+<section><app-form [model]="project_request" (submit)="submit($event)" (cancel)="cancel()" class="wide"></app-form></section>

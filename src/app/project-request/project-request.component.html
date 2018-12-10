@@ -16,37 +16,37 @@
       <!-- ID Column -->
       <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-        <td mat-cell *matCellDef="let row" [routerLink]="['/view', row.id]"> {{row.id}} </td>
+        <td mat-cell *matCellDef="let row" [routerLink]="['/edit', row.id]"> {{row.id}} </td>
       </ng-container>
 
       <!-- [ Admin ] ID Column -->
       <ng-container matColumnDef="requester_email">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Requester email </th>
-          <td mat-cell *matCellDef="let row" [routerLink]="['/view', row.id]"> {{row.requester_email}} </td>
+          <td mat-cell *matCellDef="let row" [routerLink]="['/edit', row.id]"> {{row.requester_email}} </td>
       </ng-container>
 
       <!-- GCP Project Id Column -->
       <ng-container matColumnDef="project_id">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> GCP Project Id </th>
-        <td mat-cell *matCellDef="let row" [routerLink]="['/view', row.id]"> {{row.project_id}} </td>
+        <td mat-cell *matCellDef="let row" [routerLink]="['/edit', row.id]"> {{row.project_id}} </td>
       </ng-container>
   
       <!-- GCP Project Name Column -->
       <ng-container matColumnDef="project_name">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> GCP Project Name </th>
-        <td mat-cell *matCellDef="let row" [routerLink]="['/view', row.id]"> {{row.project_name}} </td>
+        <td mat-cell *matCellDef="let row" [routerLink]="['/edit', row.id]"> {{row.project_name}} </td>
       </ng-container>
   
       <!-- Creation Date Column -->
       <ng-container matColumnDef="creation_date">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Creation Date </th>
-        <td mat-cell *matCellDef="let row" [routerLink]="['/view', row.id]"> {{row.creation_date}} </td>
+        <td mat-cell *matCellDef="let row" [routerLink]="['/edit', row.id]"> {{row.creation_date}} </td>
       </ng-container>
 
       <!-- Project Status Column -->
       <ng-container matColumnDef="status">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
-          <td mat-cell *matCellDef="let row" [style.color]="green" [routerLink]="['/view', row.id]"> {{row.status}} </td>
+          <td mat-cell *matCellDef="let row" [style.color]="green" [routerLink]="['/edit', row.id]"> {{row.status}} </td>
         </ng-container>
 
   

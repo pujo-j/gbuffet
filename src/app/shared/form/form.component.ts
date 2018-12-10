@@ -8,8 +8,8 @@ import { Component, OnInit, Output, Input, EventEmitter, OnChanges } from '@angu
 export class FormComponent implements OnInit , OnChanges {
   @Input() model: any;
   // Admin update the form to response to the project request user
-  isUpdateMode: boolean = false;
-  isAdminMode: boolean = false;
+  isUpdateMode: boolean = true;
+  isAdminMode: boolean = true;
 
   @Output('cancel') cancel$: EventEmitter<any>;
   @Output('submit') submit$: EventEmitter<any>;

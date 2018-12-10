@@ -31,7 +31,8 @@ import { ViewComponent } from './view/view.component';
     FormsModule,
     CommonModule,
     BrowserAnimationsModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule
   ],
   entryComponents: [AddDialogComponent],
   providers: [HttpClient],

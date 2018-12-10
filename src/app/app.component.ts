@@ -1,4 +1,7 @@
 import { Component,OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http'; 
+
+const BASE_URL = 'https://play-zik.appspot.com';
 
 @Component({
   selector: 'app-root',
@@ -8,9 +11,10 @@ import { Component,OnInit } from '@angular/core';
 export class AppComponent implements OnInit {
   isAdminMode: boolean = true;
 
-  constructor() {}
+  constructor(private _http: HttpClient) {}
 
   ngOnInit() {
-
+    
   }
+
 }
